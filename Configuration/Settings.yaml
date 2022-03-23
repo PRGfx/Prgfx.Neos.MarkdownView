@@ -1,0 +1,7 @@
+Neos:
+  Neos:
+    Ui:
+      resources:
+        javascript:
+          'Prgfx.Neos.MarkdownView':
+            resource: resource://Prgfx.Neos.MarkdownView/Public/JavaScript/Plugin/Plugin.js
