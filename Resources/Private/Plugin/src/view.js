@@ -50,7 +50,6 @@ export default class MarkdownView extends PureComponent {
 
     generateContent() {
         let content = this.props.options.content || '';
-        console.log('transient values', this.props.transientValues);
 
         if (content.startsWith('ClientEval:')) {
             const context = {

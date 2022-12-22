@@ -20825,7 +20825,6 @@ var MarkdownView = (_dec = (0, _neosUiDecorators.neos)(function (globalRegistry)
             var _this2 = this;
 
             var content = this.props.options.content || '';
-            console.log('transient values', this.props.transientValues);
 
             if (content.startsWith('ClientEval:')) {
                 var context = {
