@@ -4,7 +4,7 @@
     "keywords": ["neos", "neoscms", "inspector", "inspector-view", "markdown"],
     "type": "neos-package",
     "require": {
-        "neos/neos-ui": ">= 4.0 < 8.0"
+        "neos/neos-ui": ">= 4.0 < 8.3"
     },
     "license": "GPL-3.0-or-later",
     "extra": {
