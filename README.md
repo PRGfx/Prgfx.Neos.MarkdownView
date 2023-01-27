@@ -34,7 +34,7 @@ The script replaces trailing `\\` with trailing double spaces on your content, s
 
 ### ClientEval
 `ClientEval:` is implemented for the (translated) content.
-You can use `node` and `parentNode` in the context.
+You can use `node`, `parentNode` and `documentNode` in the context.
 
 ### Asynchronous Content
 If [ClientEval](#clienteval) returns a Promise, the resolved value will be loaded as content.

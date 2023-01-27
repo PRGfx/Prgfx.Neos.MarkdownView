@@ -6,7 +6,7 @@ import { neos } from '@neos-project/neos-ui-decorators';
 import { selectors } from '@neos-project/neos-ui-redux-store';
 
 const evaluate = (context, _expression) => {
-    const { node, parentNode } = context; // jshint ignore:line
+    const { node, parentNode, documentNode } = context; // jshint ignore:line
     return eval(_expression.replace('ClientEval:', '')); // jshint ignore:line
 }
 
@@ -16,10 +16,12 @@ const evaluate = (context, _expression) => {
 @connect(state => {
     const focusedNode = selectors.CR.Nodes.focusedSelector(state);
     const parentNode = selectors.CR.Nodes.nodeByContextPath(state)(focusedNode.parent);
+    const documentNode = selectors.CR.Nodes.documentNodeSelector(state);
 
     return {
         focusedNode,
         parentNode,
+        documentNode,
     };
 })
 export default class MarkdownView extends PureComponent {
@@ -32,6 +34,7 @@ export default class MarkdownView extends PureComponent {
             disallowedElements: PropTypes.arrayOf(PropTypes.string),
             focusedNode: PropTypes.object,
             parentNode: PropTypes.object,
+            documentNode: PropTypes.object,
         }).isRequired,
         i18nRegistry: PropTypes.object.isRequired,
     }
@@ -55,6 +58,7 @@ export default class MarkdownView extends PureComponent {
             const context = {
                 node: this.props.focusedNode,
                 parentNode: this.props.parentNode,
+                documentNode: this.props.documentNode,
             };
             content = evaluate(context, content.replace('ClientEval:', ''));
         }

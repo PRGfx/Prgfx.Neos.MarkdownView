@@ -20783,7 +20783,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var evaluate = function evaluate(context, _expression) {
     var node = context.node,
-        parentNode = context.parentNode; // jshint ignore:line
+        parentNode = context.parentNode,
+        documentNode = context.documentNode; // jshint ignore:line
 
     return eval(_expression.replace('ClientEval:', '')); // jshint ignore:line
 };
@@ -20795,10 +20796,12 @@ var MarkdownView = (_dec = (0, _neosUiDecorators.neos)(function (globalRegistry)
 }), _dec2 = (0, _reactRedux.connect)(function (state) {
     var focusedNode = _neosUiReduxStore.selectors.CR.Nodes.focusedSelector(state);
     var parentNode = _neosUiReduxStore.selectors.CR.Nodes.nodeByContextPath(state)(focusedNode.parent);
+    var documentNode = _neosUiReduxStore.selectors.CR.Nodes.documentNodeSelector(state);
 
     return {
         focusedNode: focusedNode,
-        parentNode: parentNode
+        parentNode: parentNode,
+        documentNode: documentNode
     };
 }), _dec(_class = _dec2(_class = (_temp = _class2 = function (_PureComponent) {
     _inherits(MarkdownView, _PureComponent);
@@ -20829,7 +20832,8 @@ var MarkdownView = (_dec = (0, _neosUiDecorators.neos)(function (globalRegistry)
             if (content.startsWith('ClientEval:')) {
                 var context = {
                     node: this.props.focusedNode,
-                    parentNode: this.props.parentNode
+                    parentNode: this.props.parentNode,
+                    documentNode: this.props.documentNode
                 };
                 content = evaluate(context, content.replace('ClientEval:', ''));
             }
@@ -20879,7 +20883,8 @@ var MarkdownView = (_dec = (0, _neosUiDecorators.neos)(function (globalRegistry)
         allowedElements: _propTypes2.default.arrayOf(_propTypes2.default.string),
         disallowedElements: _propTypes2.default.arrayOf(_propTypes2.default.string),
         focusedNode: _propTypes2.default.object,
-        parentNode: _propTypes2.default.object
+        parentNode: _propTypes2.default.object,
+        documentNode: _propTypes2.default.object
     }).isRequired,
     i18nRegistry: _propTypes2.default.object.isRequired
 }, _temp)) || _class) || _class);
