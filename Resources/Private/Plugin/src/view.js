@@ -3,8 +3,18 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown';
 import { neos } from '@neos-project/neos-ui-decorators';
+import { Icon } from '@neos-project/react-ui-components';
 import { selectors } from '@neos-project/neos-ui-redux-store';
 import { evaluate, getGuestFrame } from './helper';
+
+const Loader = () => (
+    <div style={{ textAlign: 'center', marginBlock: '4px' }}>
+        <Icon
+            icon="spinner"
+            spin
+        />
+    </div>
+);
 
 @neos((globalRegistry) => ({
     i18nRegistry: globalRegistry.get('i18n'),
@@ -37,6 +47,7 @@ export default class MarkdownView extends PureComponent {
 
     state = {
         content: '',
+        loading: false,
     }
 
     constructor(props) {
@@ -76,9 +87,15 @@ export default class MarkdownView extends PureComponent {
             && 'then' in content
             && typeof content.then === 'function'
         ) {
-            content.then(content => {
-                this.setState({ content });
-            });
+            this.setState({ loading: true });
+            content
+                .then(content => {
+                    this.setState({ content });
+                })
+                .catch(console.warn)
+                .then(() => {
+                    this.setState({ loading: false });
+                });
         } else {
             if (typeof content === 'string') {
                 content = content
@@ -95,6 +112,10 @@ export default class MarkdownView extends PureComponent {
             allowedElements,
             disallowedElements,
         } = this.props.options;
+
+        if (this.state.loading) {
+            return <Loader/>
+        }
 
         return (
             <ReactMarkdown
