@@ -47,6 +47,7 @@ export default class MarkdownView extends PureComponent {
 
     state = {
         content: '',
+        lastContent: null,
         loading: false,
     }
 
@@ -68,6 +69,7 @@ export default class MarkdownView extends PureComponent {
         if (typeof content !== 'string') {
             content = '';
         }
+        this.setState({ lastContent: content });
 
         if (content.startsWith('ClientEval:')) {
             const context = {
@@ -108,10 +110,15 @@ export default class MarkdownView extends PureComponent {
 
     render() {
         const {
+            content,
             className,
             allowedElements,
             disallowedElements,
         } = this.props.options;
+
+        if (content !== this.state.lastContent) {
+            this.generateContent();
+        }
 
         if (this.state.loading) {
             return <Loader/>
