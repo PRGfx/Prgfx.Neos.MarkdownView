@@ -4,18 +4,7 @@ import PropTypes from 'prop-types';
 import ReactMarkdown from 'react-markdown';
 import { neos } from '@neos-project/neos-ui-decorators';
 import { selectors } from '@neos-project/neos-ui-redux-store';
-
-const evaluate = (context, _expression) => {
-    const { node, parentNode, documentNode } = context; // jshint ignore:line
-    return eval(_expression.replace('ClientEval:', '')); // jshint ignore:line
-}
-
-const getGuestFrame = () => new Promise(resolve => {
-    const iframe = document.querySelector('iframe');
-    if (iframe) {
-        resolve(iframe);
-    }
-});
+import { evaluate, getGuestFrame } from './helper';
 
 @neos((globalRegistry) => ({
     i18nRegistry: globalRegistry.get('i18n'),
@@ -89,7 +78,7 @@ export default class MarkdownView extends PureComponent {
         ) {
             content.then(content => {
                 this.setState({ content });
-            })
+            });
         } else {
             if (typeof content === 'string') {
                 content = content
