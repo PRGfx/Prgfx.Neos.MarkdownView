@@ -416,6 +416,26 @@ module.exports = (0, _readFromConsumerApi2.default)('NeosProjectPackages')().Neo
 
 /***/ }),
 
+/***/ "./node_modules/@neos-project/neos-ui-extensibility/src/shims/neosProjectPackages/react-ui-components/index.js":
+/*!*********************************************************************************************************************!*\
+  !*** ./node_modules/@neos-project/neos-ui-extensibility/src/shims/neosProjectPackages/react-ui-components/index.js ***!
+  \*********************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _readFromConsumerApi = __webpack_require__(/*! ../../../../dist/readFromConsumerApi */ "./node_modules/@neos-project/neos-ui-extensibility/dist/readFromConsumerApi.js");
+
+var _readFromConsumerApi2 = _interopRequireDefault(_readFromConsumerApi);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = (0, _readFromConsumerApi2.default)('NeosProjectPackages')().ReactUiComponents;
+
+/***/ }),
+
 /***/ "./node_modules/@neos-project/neos-ui-extensibility/src/shims/vendor/prop-types/index.js":
 /*!***********************************************************************************************!*\
   !*** ./node_modules/@neos-project/neos-ui-extensibility/src/shims/vendor/prop-types/index.js ***!
@@ -20691,6 +20711,109 @@ function isUrl(fileURLOrPath) {
 
 /***/ }),
 
+/***/ "./src/helper.js":
+/*!***********************!*\
+  !*** ./src/helper.js ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _getGuestFrame = function _getGuestFrame() {
+    return new Promise(function (resolve) {
+        var iframe = document.querySelector('iframe');
+        if (iframe) {
+            resolve(iframe);
+        }
+    });
+};
+
+/**
+ * Given a CSS selector, tries to find the respective element in the guest-frame
+ * @private
+ */
+var _htmlElement = function _htmlElement(selector) {
+    return function () {
+        return document.querySelector('iframe').contentDocument.querySelector(selector);
+    };
+};
+
+/**
+ * Given a node object, tries to find the HTML element in the guest-frame belonging to that node
+ * @private
+ */
+var _nodeHtml = function _nodeHtml(node) {
+    return function () {
+        return document.querySelector('iframe').contentDocument.querySelector('[data-__neos-node-contextpath="' + node.contextPath + '"]');
+    };
+};
+
+/**
+ * @template T
+ * @type {{
+ *     (test: () => T, retries?: number, timeout?: number): Promise<T>;
+ *     (test: number): Promise<void>;
+ *     (test: Promise<T>): Promise<T>;
+ *     (test: unknown[]): Promise<unknown>;
+ * }}
+ */
+var _waitFor = function _waitFor(test) {
+    var retries = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
+    var timeout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 200;
+    return new Promise(function (res, rej) {
+        if (typeof test === 'number') {
+            setTimeout(res, test);
+            return;
+        }
+        if ((typeof test === 'undefined' ? 'undefined' : _typeof(test)) === 'object' && test instanceof Promise) {
+            test.then(res);
+            return;
+        }
+        if (Array.isArray(test)) {
+            Promise.allSettled(test.map(_waitFor(test, retries, timeout))).then(res);
+            return;
+        }
+
+        var retry = function retry(cb) {
+            var result = cb();
+            if (result) {
+                res(result);
+            } else if (retries-- > 0) {
+                setTimeout(function () {
+                    return retry(cb);
+                }, timeout);
+            } else {
+                rej();
+            }
+        };
+        retry(test);
+    });
+};
+
+var evaluate = exports.evaluate = function evaluate(context, _expression) {
+    var node = context.node,
+        parentNode = context.parentNode,
+        documentNode = context.documentNode; // jshint ignore:line
+
+    var guestFrame = _getGuestFrame();
+    var htmlElement = _htmlElement;
+    var waitFor = _waitFor;
+    var nodeHtml = _nodeHtml(node);
+    return eval(_expression.replace('ClientEval:', '')); // jshint ignore:line
+};
+
+var getGuestFrame = exports.getGuestFrame = _getGuestFrame;
+
+/***/ }),
+
 /***/ "./src/index.js":
 /*!**********************!*\
   !*** ./src/index.js ***!
@@ -20771,7 +20894,11 @@ var _reactMarkdown2 = _interopRequireDefault(_reactMarkdown);
 
 var _neosUiDecorators = __webpack_require__(/*! @neos-project/neos-ui-decorators */ "./node_modules/@neos-project/neos-ui-extensibility/src/shims/neosProjectPackages/neos-ui-decorators/index.js");
 
+var _reactUiComponents = __webpack_require__(/*! @neos-project/react-ui-components */ "./node_modules/@neos-project/neos-ui-extensibility/src/shims/neosProjectPackages/react-ui-components/index.js");
+
 var _neosUiReduxStore = __webpack_require__(/*! @neos-project/neos-ui-redux-store */ "./node_modules/@neos-project/neos-ui-extensibility/src/shims/neosProjectPackages/neos-ui-redux-store/index.js");
+
+var _helper = __webpack_require__(/*! ./helper */ "./src/helper.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20781,12 +20908,15 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var evaluate = function evaluate(context, _expression) {
-    var node = context.node,
-        parentNode = context.parentNode,
-        documentNode = context.documentNode; // jshint ignore:line
-
-    return eval(_expression.replace('ClientEval:', '')); // jshint ignore:line
+var Loader = function Loader() {
+    return _react2.default.createElement(
+        'div',
+        { style: { textAlign: 'center', marginBlock: '4px' } },
+        _react2.default.createElement(_reactUiComponents.Icon, {
+            icon: 'spinner',
+            spin: true
+        })
+    );
 };
 
 var MarkdownView = (_dec = (0, _neosUiDecorators.neos)(function (globalRegistry) {
@@ -20812,8 +20942,16 @@ var MarkdownView = (_dec = (0, _neosUiDecorators.neos)(function (globalRegistry)
         var _this = _possibleConstructorReturn(this, (MarkdownView.__proto__ || Object.getPrototypeOf(MarkdownView)).call(this, props));
 
         _this.state = {
-            content: ''
+            content: '',
+            lastContent: null,
+            loading: false
         };
+
+
+        var regenerateContent = _this.generateContent.bind(_this);
+        (0, _helper.getGuestFrame)().then(function (iframe) {
+            iframe.addEventListener('load', regenerateContent);
+        });
         return _this;
     }
 
@@ -20828,6 +20966,10 @@ var MarkdownView = (_dec = (0, _neosUiDecorators.neos)(function (globalRegistry)
             var _this2 = this;
 
             var content = this.props.options.content || '';
+            if (typeof content !== 'string') {
+                content = '';
+            }
+            this.setState({ lastContent: content });
 
             if (content.startsWith('ClientEval:')) {
                 var context = {
@@ -20835,15 +20977,18 @@ var MarkdownView = (_dec = (0, _neosUiDecorators.neos)(function (globalRegistry)
                     parentNode: this.props.parentNode,
                     documentNode: this.props.documentNode
                 };
-                content = evaluate(context, content.replace('ClientEval:', ''));
+                content = (0, _helper.evaluate)(context, content.replace('ClientEval:', ''));
             }
             try {
                 content = this.props.i18nRegistry.translate(content);
             } catch (e) {}
 
             if ((typeof content === 'undefined' ? 'undefined' : _typeof(content)) === 'object' && 'then' in content && typeof content.then === 'function') {
+                this.setState({ loading: true });
                 content.then(function (content) {
                     _this2.setState({ content: content });
+                }).catch(console.warn).then(function () {
+                    _this2.setState({ loading: false });
                 });
             } else {
                 if (typeof content === 'string') {
@@ -20858,10 +21003,19 @@ var MarkdownView = (_dec = (0, _neosUiDecorators.neos)(function (globalRegistry)
         key: 'render',
         value: function render() {
             var _props$options = this.props.options,
+                content = _props$options.content,
                 className = _props$options.className,
                 allowedElements = _props$options.allowedElements,
                 disallowedElements = _props$options.disallowedElements;
 
+
+            if (content !== this.state.lastContent) {
+                this.generateContent();
+            }
+
+            if (this.state.loading) {
+                return _react2.default.createElement(Loader, null);
+            }
 
             return _react2.default.createElement(
                 _reactMarkdown2.default,
@@ -20881,11 +21035,11 @@ var MarkdownView = (_dec = (0, _neosUiDecorators.neos)(function (globalRegistry)
         content: _propTypes2.default.string,
         className: _propTypes2.default.string,
         allowedElements: _propTypes2.default.arrayOf(_propTypes2.default.string),
-        disallowedElements: _propTypes2.default.arrayOf(_propTypes2.default.string),
-        focusedNode: _propTypes2.default.object,
-        parentNode: _propTypes2.default.object,
-        documentNode: _propTypes2.default.object
+        disallowedElements: _propTypes2.default.arrayOf(_propTypes2.default.string)
     }).isRequired,
+    focusedNode: _propTypes2.default.object,
+    parentNode: _propTypes2.default.object,
+    documentNode: _propTypes2.default.object,
     i18nRegistry: _propTypes2.default.object.isRequired
 }, _temp)) || _class) || _class);
 exports.default = MarkdownView;
