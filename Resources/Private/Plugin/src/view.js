@@ -10,6 +10,13 @@ const evaluate = (context, _expression) => {
     return eval(_expression.replace('ClientEval:', '')); // jshint ignore:line
 }
 
+const getGuestFrame = () => new Promise(resolve => {
+    const iframe = document.querySelector('iframe');
+    if (iframe) {
+        resolve(iframe);
+    }
+});
+
 @neos((globalRegistry) => ({
     i18nRegistry: globalRegistry.get('i18n'),
 }))
@@ -45,6 +52,11 @@ export default class MarkdownView extends PureComponent {
 
     constructor(props) {
         super(props);
+
+        const regenerateContent = this.generateContent.bind(this);
+        getGuestFrame().then(iframe => {
+            iframe.addEventListener('load', regenerateContent);
+        })
     }
 
     componentDidMount() {
