@@ -32,10 +32,10 @@ export default class MarkdownView extends PureComponent {
             className: PropTypes.string,
             allowedElements: PropTypes.arrayOf(PropTypes.string),
             disallowedElements: PropTypes.arrayOf(PropTypes.string),
-            focusedNode: PropTypes.object,
-            parentNode: PropTypes.object,
-            documentNode: PropTypes.object,
         }).isRequired,
+        focusedNode: PropTypes.object,
+        parentNode: PropTypes.object,
+        documentNode: PropTypes.object,
         i18nRegistry: PropTypes.object.isRequired,
     }
 
@@ -53,6 +53,9 @@ export default class MarkdownView extends PureComponent {
 
     generateContent() {
         let content = this.props.options.content || '';
+        if (typeof content !== 'string') {
+            content = '';
+        }
 
         if (content.startsWith('ClientEval:')) {
             const context = {
